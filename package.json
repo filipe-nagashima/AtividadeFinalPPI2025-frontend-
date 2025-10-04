@@ -1,0 +1,25 @@
+{
+  "name": "atividadefinalppi2025-frontend-",
+  "version": "1.0.0",
+  "description": "Trabalho Final PPI2025 frontend",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/filipe-nagashima/AtividadeFinalPPI2025-frontend-.git"
+  },
+  "author": "Filipe Souza Nagashima",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/filipe-nagashima/AtividadeFinalPPI2025-frontend-/issues"
+  },
+  "homepage": "https://github.com/filipe-nagashima/AtividadeFinalPPI2025-frontend-#readme",
+  "dependencies": {
+    "express": "^5.1.0",
+    "express-session": "^1.18.2"
+  }
+}
