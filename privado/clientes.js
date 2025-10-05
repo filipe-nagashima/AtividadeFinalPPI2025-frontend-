@@ -17,7 +17,7 @@ function gravarCliente(evento) {
         const tel = document.getElementById("tel").value
         const email = document.getElementById("email").value
 
-        fetch("http://localhost:3000/clientes", {
+        fetch("http://localhost:4000/cliente", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -25,7 +25,7 @@ function gravarCliente(evento) {
             body: JSON.stringify({
                 "cpf": cpf,
                 "nome": nome,
-                "tel": tel,
+                "telefone": tel,
                 "email": email
             })
 
@@ -50,7 +50,7 @@ function gravarCliente(evento) {
     evento.preventDefault()
 }
 
-/*function validarFormulario() {
+function validarFormulario() {
 
     const formValidado = formulario.checkValidity()
 
@@ -62,11 +62,11 @@ function gravarCliente(evento) {
     }
 
     return formValidado
-}*/
+}
 
 function excluirCliente(cpf) {
     if (confirm("Deseja excluir o cliente?")) {
-        fetch("http://localhost:3000/clientes/" + cpf, { method: "DELETE" })
+        fetch("http://localhost:4000/cliente/" + cpf, { method: "DELETE" })
             .then((resposta) => {
                 if (resposta.ok) {
                     return resposta.json()
@@ -97,14 +97,14 @@ function alterarCliente() {
             const tel = document.getElementById("tel").value
             const email = document.getElementById("email").value
 
-            fetch("http://localhost:3000/clientes/" + cpf, {
+            fetch("http://localhost:4000/cliente/" + cpf, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
                     "nome": nome,
-                    "tel": tel,
+                    "telefone": tel,
                     "email": email
                 })
 
@@ -114,7 +114,6 @@ function alterarCliente() {
                     if (dados.status) {
                         alert("Cliente alterado com sucesso!")
                         formulario.reset()
-                        document.getElementById("cpf").value = "";
                         btnCadastrar.disabled = false
                         btnAlterar.disabled = true;
                         btnCancelar.disabled = true;
@@ -166,7 +165,7 @@ function exibirTabelaClientes() {
     const espacoTabela = document.getElementById('tabelaClientes')
     espacoTabela.innerHTML = ""
 
-    fetch("http://localhost:3000/clientes", { method: "GET" })
+    fetch("http://localhost:4000/cliente", { method: "GET" })
         .then((resposta) => {
             if (resposta.ok) {
                 return resposta.json()
@@ -181,7 +180,7 @@ function exibirTabelaClientes() {
                 cabecalho.innerHTML = `
                 <table class="table table-dark table-striped">
                     <tr>
-                        <th>Cpf</th>
+                        <th>CPF</th>
                         <th>Nome</th>
                         <th>Telefone</th>
                         <th>Email</th>
@@ -198,11 +197,11 @@ function exibirTabelaClientes() {
                     linha.innerHTML += `
                     <td>${cliente.cpf}</td>
                     <td>${cliente.nome}</td>
-                    <td>${cliente.tel}</td>
+                    <td>${cliente.telefone}</td>
                     <td>${cliente.email}</td>
                     <td>
                         <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-warning" onclick="prepararTela('${cliente.cpf}','${cliente.nome}','${cliente.tel}',\
+                            <button type="button" class="btn btn-warning" onclick="prepararTela('${cliente.cpf}','${cliente.nome}','${cliente.telefone}',\
                             '${cliente.email}','alterar')">
                                 <i class="bi bi-pencil-fill"></i>
                             </button>

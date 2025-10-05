@@ -3,6 +3,10 @@ const formulario = document.getElementById("formLivro")
 
 formulario.onsubmit = gravarLivro
 
+let listaClientes = [];
+
+carregarClientes()
+
 document.getElementById('btnAlterar').addEventListener('click', alterarLivro);
 document.getElementById('btnCancelar').addEventListener('click', () => {
     prepararTela('','','','','cancelar');
@@ -14,18 +18,25 @@ function gravarLivro(evento) {
     if (validarFormulario()) {
         const titulo = document.getElementById("titulo").value
         const autor = document.getElementById("autor").value
-        const cpf = document.getElementById("cpf").innerText//VERIFICAR NA AULA
-        //COMO FICA ESSA PARTE
+        const cpf = document.getElementById("nomecliente").value
 
-        fetch("http://localhost:3000/livros", {
+        const clienteSelecionado = listaClientes.find(c => c.cpf === cpf);
+
+        fetch("http://localhost:4000/livro", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                "titulo": titulo,
-                "autor": autor,
-                "cpf": cpf //VERIFICAR NA AULA
+                "liv_titulo": titulo,
+                "liv_autor": autor,
+                "cliente": {
+                            "cpf": clienteSelecionado.cpf,
+                            "nome": clienteSelecionado.nome,
+                            "telefone": clienteSelecionado.telefone,
+                            "email": clienteSelecionado.email
+                            }
+
             })
 
         })
@@ -63,9 +74,39 @@ function validarFormulario() {
     return formValidado
 }
 
+function carregarClientes(){
+    fetch("http://localhost:4000/cliente", { method: "GET" })
+    .then((resposta) => 
+    {
+        if(resposta.ok)
+        {
+            return resposta.json()
+        }
+    })
+    .then((dados) => 
+    {
+        if(dados.status)
+        {
+            listaClientes = dados.clientes
+            const selectClientes = document.getElementById("nomecliente")
+            for(const cliente of dados.clientes)
+            {
+                const option = document.createElement("option")
+                option.value = cliente.cpf
+                option.textContent = cliente.nome
+                selectClientes.appendChild(option)
+            }
+        }
+    })
+    .catch((erro) =>
+    {
+        alert("Não foi possível recuperar os clientes do backend: " + erro.message)
+    })
+}
+
 function excluirLivro(cod_livro) {
     if (confirm("Deseja excluir o livro?")) {
-        fetch("http://localhost:3000/livros/" + cod_livro, { method: "DELETE" })
+        fetch("http://localhost:4000/livro/" + cod_livro, { method: "DELETE" })
             .then((resposta) => {
                 if (resposta.ok) {
                     return resposta.json()
@@ -94,18 +135,24 @@ function alterarLivro() {
             const cod_livro = document.getElementById("cod").value
             const titulo = document.getElementById("titulo").value
             const autor = document.getElementById("autor").value
-            const cpf = document.getElementById("cpf").value//VER NA AULA
-            //COMO FICA ESSA PARTE DE PEGAR O CPF NO DROPDOWN
+            const cpf = document.getElementById("nomecliente").value
 
-            fetch("http://localhost:3000/livros/" + cod_livro, {
+            const clienteSelecionado = listaClientes.find(c => c.cpf === cpf);
+
+            fetch("http://localhost:4000/livro/" + cod_livro, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    "titulo": titulo,
-                    "autor": autor,
-                    "cpf": cpf //VERIFICAR NA AULA
+                    "liv_titulo": titulo,
+                    "liv_autor": autor,
+                    "cliente": {
+                            "cpf": clienteSelecionado.cpf,
+                            "nome": clienteSelecionado.nome,
+                            "telefone": clienteSelecionado.telefone,
+                            "email": clienteSelecionado.email
+                            }
                 })
 
             })
@@ -146,7 +193,7 @@ function prepararTela(cod_livro="",titulo="", autor="", cpf="", acao="")
         document.getElementById("cod").value = cod_livro
         document.getElementById("titulo").value = titulo
         document.getElementById("autor").value = autor
-        document.getElementById("cpf").value = cpf//VER COMO PEGAR O CPF NO DROPDOWN
+        document.getElementById("nomecliente").value = cpf
     }
     else 
     if(acao == "cancelar")
@@ -166,7 +213,7 @@ function exibirTabelaLivros() {
     const espacoTabela = document.getElementById('tabelaLivros')
     espacoTabela.innerHTML = ""
 
-    fetch("http://localhost:3000/livros", { method: "GET" })
+    fetch("http://localhost:4000/livro", { method: "GET" })
         .then((resposta) => {
             if (resposta.ok) {
                 return resposta.json()
@@ -195,16 +242,15 @@ function exibirTabelaLivros() {
                 for (const livro of dados.livros) {
                     const linha = document.createElement("tr")
                     
-                    //VER AQUI TBM COMO O PROF FEZ NA AULA P/ PEGAR O NOME DO CLIENTE
                     linha.innerHTML += `
                     <td>${livro.cod}</td>
                     <td>${livro.titulo}</td>
                     <td>${livro.autor}</td>
-                    <td>${livro.cliente}</td>
+                    <td>${livro.cliente.nome}</td>
                     <td>
                         <div class="btn-group" role="group">
                             <button type="button" class="btn btn-warning" onclick="prepararTela('${livro.cod}','${livro.titulo}','${livro.autor}',\
-                            '${livro.cliente}','alterar')">
+                            '${livro.cliente.cpf}','alterar')">
                                 <i class="bi bi-pencil-fill"></i>
                             </button>
                             <button type="button" class="btn btn-danger" onclick="excluirLivro('${livro.cod}')">
